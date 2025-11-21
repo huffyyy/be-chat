@@ -47,7 +47,7 @@ model User {
   password_resets PasswordReset[] 
   
   owner_transactions Transaction[] @relation("TransactionOwnerRelation")
-  member_trasactions Transaction[] @relation("TransactionMemberRelation")
+  member_transactions Transaction[] @relation("TransactionMemberRelation")
 
   payouts Payout[]
   @@map("users")
