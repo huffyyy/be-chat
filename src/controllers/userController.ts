@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { signInSchema, signUpSchema } from "../utils/schema/user";
+import { resetPasswordSchema, signInSchema, signUpSchema } from "../utils/schema/user";
 import fs from "node:fs";
 import * as userService from "../services/userService";
+import { success } from "zod/v4";
 
 export const signUp = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -55,6 +56,57 @@ export const signIn = async (req: Request, res: Response, next: NextFunction) =>
       success: "true",
       message: "Sign In success",
       data
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getEmailReset = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const parse = signInSchema.pick({ email: true }).safeParse(req.body);
+
+    if (!parse.success) {
+      const errorMessage = parse.error.issues.map((err) => `${err.path} - ${err.message}`);
+
+      return res.status(500).json({
+        success: false,
+        message: "Validation Error",
+        detail: errorMessage
+      });
+    }
+
+    await userService.getEmailReset(parse.data.email);
+    return res.json({
+      success: true,
+      message: "Reset Link to email"
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updatePassword = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const parse = resetPasswordSchema.safeParse(req.body);
+
+    if (!parse.success) {
+      const errorMessage = parse.error.issues.map((err) => `${err.path} - ${err.message}`);
+
+      return res.status(400).json({
+        success: false,
+        message: "Validation Error",
+        detail: errorMessage
+      });
+    }
+
+    const { tokenId } = req.params;
+
+    await userService.updatePassword(parse.data, tokenId);
+
+    return res.json({
+      success: true,
+      message: "Reset Password success"
     });
   } catch (error) {
     next(error);

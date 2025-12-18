@@ -17,5 +17,8 @@ const uploadPhoto = multer({
 
 userRoutes.post("/auth/sign-up", uploadPhoto.single("photo"), userContoller.signUp);
 userRoutes.post("/auth/sign-in", userContoller.signIn);
+userRoutes.post("/auth/reset-password", userContoller.getEmailReset);
+
+userRoutes.put("/auth/reset-password/:tokenId", userContoller.updatePassword);
 
 export default userRoutes;
