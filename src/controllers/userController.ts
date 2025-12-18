@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { signUpSchema } from "../utils/schema/user";
+import { signInSchema, signUpSchema } from "../utils/schema/user";
 import fs from "node:fs";
 import * as userService from "../services/userService";
 
@@ -33,4 +33,30 @@ export const signUp = async (req: Request, res: Response, next: NextFunction) =>
       data: newUser
     });
   } catch (error) {}
+};
+
+export const signIn = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const parse = signInSchema.safeParse(req.body);
+
+    if (!parse.success) {
+      const errorMessage = parse.error.issues.map((err) => `${err.path} - ${err.message}`);
+
+      return res.status(500).json({
+        success: false,
+        message: "Validation Error",
+        detail: errorMessage
+      });
+    }
+
+    const data = await userService.signIn(parse.data);
+
+    return res.json({
+      success: "true",
+      message: "Sign In success",
+      data
+    });
+  } catch (error) {
+    next(error);
+  }
 };

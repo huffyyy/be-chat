@@ -16,5 +16,6 @@ const uploadPhoto = multer({
 });
 
 userRoutes.post("/auth/sign-up", uploadPhoto.single("photo"), userContoller.signUp);
+userRoutes.post("/auth/sign-in", userContoller.signIn);
 
 export default userRoutes;
