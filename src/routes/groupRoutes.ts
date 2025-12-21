@@ -10,9 +10,10 @@ const uploadPhoto = multer({
   storage: storageGroupPhoto,
   fileFilter(req, file, callback) {
     if (file.mimetype.startsWith("image/")) {
+      callback(null, true);
+    } else {
       callback(null, false);
     }
-    callback(null, true);
   }
 });
 
@@ -32,11 +33,19 @@ const uploadPhotoPaid = multer({
 });
 
 groupRoutes.post("/groups/free", verifyToken, uploadPhoto.single("photo"), groupController.createFreeGroup);
+groupRoutes.put("/groups/free/:groupId", verifyToken, uploadPhoto.single("photo"), groupController.updateFreeGroup);
+
 groupRoutes.post(
   "/groups/paid",
   verifyToken,
   uploadPhotoPaid.fields([{ name: "photo", maxCount: 1 }, { name: "assets" }]),
   groupController.createPaidGroup
+);
+groupRoutes.put(
+  "/groups/paid/:groupId",
+  verifyToken,
+  uploadPhotoPaid.fields([{ name: "photo", maxCount: 1 }, { name: "assets" }]),
+  groupController.updatePaidGroup
 );
 
 export default groupRoutes;

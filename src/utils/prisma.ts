@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient().$extends({
+export const prisma = new PrismaClient().$extends({
   result: {
     user: {
       photo_url: {

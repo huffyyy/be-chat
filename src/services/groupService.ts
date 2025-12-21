@@ -1,14 +1,42 @@
 import { GroupFreeValues, GroupPaidValues } from "../utils/schema/group";
 import * as groupRepositories from "../repositories/groupRepositories";
+import path from "node:path";
+import fs from "node:fs";
 
-export const createFreeGroup = async (data: GroupFreeValues, photo: string, userId: string) => {
-  const group = await groupRepositories.createGroup(data, photo, userId);
+export const upsertFreeGroup = async (data: GroupFreeValues, userId: string, photo?: string, groupId?: string) => {
+  if (groupId && photo) {
+    const group = await groupRepositories.findGroupById(groupId);
+
+    const pathPhoto = path.join(__dirname, "../../public/assets/uploads/groups", group.photo);
+
+    if (fs.existsSync(pathPhoto)) {
+      fs.unlinkSync(pathPhoto);
+    }
+  }
+
+  const group = await groupRepositories.upsetFreeGroup(data, userId, photo);
 
   return group;
 };
 
-export const createPaidGroup = async (data: GroupPaidValues, photo: string, userId: string, assets?: string[]) => {
-  const group = await groupRepositories.createPaidGroup(data, photo, userId, assets);
+export const upsertPaidGroup = async (
+  data: GroupPaidValues,
+  photo: string,
+  userId: string,
+  assets?: string[],
+  groupId?: string
+) => {
+  if (groupId && photo) {
+    const group = await groupRepositories.findGroupById(groupId);
+
+    const pathPhoto = path.join(__dirname, "../../public/assets/uploads/groups", group.photo);
+
+    if (fs.existsSync(pathPhoto)) {
+      fs.unlinkSync(pathPhoto);
+    }
+  }
+
+  const group = await groupRepositories.upsertPaidGroup(data, userId, photo, assets, groupId);
 
   return group;
 };

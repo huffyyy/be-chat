@@ -1,13 +1,24 @@
+import prisma from "../utils/prisma";
 import { GroupFreeValues, GroupPaidValues } from "../utils/schema/group";
 import * as userRepositories from "../repositories/userRepositories";
-import prisma from "../utils/prisma";
 
-export const createGroup = async (data: GroupFreeValues, photo: string, userId: string) => {
+export const findGroupById = async (id: string) => {
+  return await prisma.group.findFirstOrThrow({
+    where: {
+      id
+    }
+  });
+};
+
+export const upsetFreeGroup = async (data: GroupFreeValues, userId: string, photo?: string, groupId?: string) => {
   const owner = await userRepositories.findRole("OWNER");
 
-  return await prisma.group.create({
-    data: {
-      photo,
+  return await prisma.group.upsert({
+    where: {
+      id: groupId ?? ""
+    },
+    create: {
+      photo: photo ?? "",
       name: data.name,
       about: data.about,
       price: 0,
@@ -25,21 +36,35 @@ export const createGroup = async (data: GroupFreeValues, photo: string, userId: 
           is_group: true
         }
       }
+    },
+    update: {
+      photo,
+      name: data.name,
+      about: data.about
     }
   });
 };
 
-export const createPaidGroup = async (data: GroupPaidValues, photo: string, userId: string, assets?: string[]) => {
+export const upsertPaidGroup = async (
+  data: GroupPaidValues,
+  userId: string,
+  photo?: string,
+  assets?: string[],
+  groupId?: string
+) => {
   const owner = await userRepositories.findRole("OWNER");
 
-  const group = await prisma.group.create({
-    data: {
-      photo,
+  const group = await prisma.group.upsert({
+    where: {
+      id: groupId ?? ""
+    },
+    create: {
+      photo: photo ?? "",
       name: data.name,
       about: data.about,
       price: Number.parseInt(data.price),
       benefit: data.benefit,
-      type: "FREE",
+      type: "PAID",
       room: {
         create: {
           created_by: userId,
@@ -53,6 +78,14 @@ export const createPaidGroup = async (data: GroupPaidValues, photo: string, user
           is_group: true
         }
       }
+    },
+    update: {
+      photo,
+      name: data.name,
+      about: data.about,
+      price: Number.parseInt(data.price),
+      benefit: data.benefit,
+      type: "PAID"
     }
   });
 
