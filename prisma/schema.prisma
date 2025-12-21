@@ -62,12 +62,14 @@ model Group {
   id String @id @default(uuid()) @db.Char(36)
   name String
   photo String
-  Type GroupType
+  type GroupType
   about String @db.Text
   benefit String[]
 
   price Int 
 
+  room_id String @unique
+  room Room @relation(fields: [room_id], references: [id])
   created_at DateTime @default(now())
 
   assets GroupAsset[]
@@ -101,6 +103,8 @@ model Room {
 
   members RoomMember[]
   messages RoomMessage[]
+
+  group Group?
 
   @@map("rooms")
 }

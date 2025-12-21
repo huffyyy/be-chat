@@ -2,7 +2,17 @@ import { RoleType } from "@prisma/client";
 import prisma from "../utils/prisma";
 import { signUpValues } from "../utils/schema/user";
 import crypto from "node:crypto";
-import { TokenExpiredError } from "jsonwebtoken";
+
+export const getUserById = async (id: string) => {
+  return await prisma.user.findFirstOrThrow({
+    where: {
+      id
+    },
+    include: {
+      role: true
+    }
+  });
+};
 
 export const isEmailExist = async (email: string) => {
   return await prisma.user.count({
