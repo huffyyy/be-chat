@@ -14,6 +14,18 @@ export const prisma = new PrismaClient().$extends({
           return null;
         }
       }
+    },
+    group: {
+      photo_url: {
+        needs: {
+          photo: true
+        },
+        compute(data) {
+          if (data.photo) {
+            return `${process.env.URL_ASSET_GROUP_PHOTO}${data.photo}`;
+          }
+        }
+      }
     }
   }
 });

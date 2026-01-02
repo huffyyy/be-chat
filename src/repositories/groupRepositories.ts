@@ -2,6 +2,33 @@ import prisma from "../utils/prisma";
 import { GroupFreeValues, GroupPaidValues } from "../utils/schema/group";
 import * as userRepositories from "../repositories/userRepositories";
 
+export const getDiscoverGroups = async (name = "") => {
+  return await prisma.group.findMany({
+    where: {
+      name: {
+        contains: name,
+        mode: "insensitive"
+      }
+    },
+    select: {
+      photo_url: true,
+      id: true,
+      name: true,
+      about: true,
+      type: true,
+      room: {
+        select: {
+          _count: {
+            select: {
+              members: true
+            }
+          }
+        }
+      }
+    }
+  });
+};
+
 export const findGroupById = async (id: string) => {
   return await prisma.group.findFirstOrThrow({
     where: {
