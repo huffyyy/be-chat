@@ -29,6 +29,25 @@ export const getDiscoverGroups = async (name = "") => {
   });
 };
 
+export const getDiscoverPeople = async (name = "", userId?: string) => {
+  return await prisma.user.findMany({
+    where: {
+      id: {
+        not: userId
+      },
+      name: {
+        contains: name,
+        mode: "insensitive"
+      }
+    },
+    select: {
+      id: true,
+      name: true,
+      photo_url: true
+    }
+  });
+};
+
 export const findGroupById = async (id: string) => {
   return await prisma.group.findFirstOrThrow({
     where: {

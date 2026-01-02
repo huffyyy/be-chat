@@ -32,7 +32,9 @@ const uploadPhotoPaid = multer({
   //   }
 });
 
-groupRoutes.get("/groups", groupController.getDiscoverGroups);
+groupRoutes.get("/groups", verifyToken, groupController.getDiscoverGroups);
+
+groupRoutes.get("/peoples", verifyToken, groupController.getDiscoverPeoples);
 
 groupRoutes.post("/groups/free", verifyToken, uploadPhoto.single("photo"), groupController.createFreeGroup);
 groupRoutes.put("/groups/free/:groupId", verifyToken, uploadPhoto.single("photo"), groupController.updateFreeGroup);
