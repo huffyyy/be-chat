@@ -55,4 +55,6 @@ groupRoutes.put(
   groupController.updatePaidGroup
 );
 
+groupRoutes.post("/groups/join", verifyToken, groupController.createMemberFreeGroup);
+
 export default groupRoutes;

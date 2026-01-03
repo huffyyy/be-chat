@@ -35,13 +35,15 @@ CREATE TABLE "groups" (
     "id" CHAR(36) NOT NULL,
     "name" TEXT NOT NULL,
     "photo" TEXT NOT NULL,
-    "Type" "GroupType" NOT NULL,
+    "type" "GroupType" NOT NULL,
     "about" TEXT NOT NULL,
     "benefit" TEXT[],
     "price" INTEGER NOT NULL,
+    "room_id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "groups_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "groups_pkey" PRIMARY KEY ("id"),
+    CONSTRAINT "groups_room_id_key" UNIQUE ("room_id")
 );
 
 -- CreateTable
@@ -126,6 +128,9 @@ CREATE TABLE "payouts" (
 
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "roles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "groups" ADD CONSTRAINT "groups_room_id_fkey" FOREIGN KEY ("room_id") REFERENCES "rooms"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "group_assets" ADD CONSTRAINT "group_assets_group_id_fkey" FOREIGN KEY ("group_id") REFERENCES "groups"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

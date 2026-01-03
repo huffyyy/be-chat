@@ -1,5 +1,5 @@
 import { Response, NextFunction } from "express";
-import { groupFreeSchema, groupPaidSchema } from "../utils/schema/group";
+import { groupFreeSchema, groupPaidSchema, joinFreeGroup } from "../utils/schema/group";
 import * as groupService from "../services/groupService";
 import { CustomRequest } from "../types/customRequest";
 
@@ -53,9 +53,9 @@ export const getDiscoverPeoples = async (req: CustomRequest, res: Response, next
 
 export const findDetailGroup = async (req: CustomRequest, res: Response, next: NextFunction) => {
   try {
-    const { id } = req.params;
+    const { groupId } = req.params;
 
-    const data = await groupService.findDetailGroup(id, req?.user?.id ?? "");
+    const data = await groupService.findDetailGroup(groupId, req.user!.id);
 
     return res.json({
       success: true,
@@ -162,7 +162,7 @@ export const createPaidGroup = async (req: CustomRequest, res: Response, next: N
     const photo = files.photo[0].filename;
     const assets = files.assets.map((file) => file.filename);
 
-    const group = await groupService.upsertPaidGroup(parse.data, photo, req.user?.id ?? "", assets);
+    const group = await groupService.upsertPaidGroup(parse.data, req.user?.id ?? "", photo, assets);
 
     return res.json({
       success: true,
@@ -207,6 +207,32 @@ export const updatePaidGroup = async (req: CustomRequest, res: Response, next: N
       success: true,
       message: "Update group success",
       data: group
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createMemberFreeGroup = async (req: CustomRequest, res: Response, next: NextFunction) => {
+  try {
+    const parse = joinFreeGroup.safeParse(req.body);
+
+    if (!parse.success) {
+      const errorMessage = parse.error.issues.map((err) => `${err.path} - ${err.message}`);
+
+      return res.status(400).json({
+        success: false,
+        message: "Validation Error",
+        detail: errorMessage
+      });
+    }
+
+    const data = await groupService.addMemberFreeGroup(parse.data.group_id, req.user?.id ?? "");
+
+    return res.json({
+      success: true,
+      message: "Succes join group",
+      data
     });
   } catch (error) {
     next(error);

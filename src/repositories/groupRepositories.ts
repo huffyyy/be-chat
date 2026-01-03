@@ -49,11 +49,17 @@ export const getDiscoverPeople = async (name = "", userId?: string) => {
 };
 
 export const findGroupById = async (id: string) => {
-  return await prisma.group.findFirstOrThrow({
+  const group = await prisma.group.findFirst({
     where: {
       id
     }
   });
+
+  if (!group) {
+    throw new Error("GROUP_NOT_FOUND");
+  }
+
+  return group;
 };
 
 export const upsetFreeGroup = async (data: GroupFreeValues, userId: string, photo?: string, groupId?: string) => {
@@ -149,17 +155,33 @@ export const upsertPaidGroup = async (
 };
 
 export const findDetailGroup = async (id: string, userId: string) => {
-  return await prisma.group.findFirstOrThrow({
+  const group = await prisma.group.findFirst({
     where: {
-      id: id,
-      room: {
-        created_by: userId
-      }
+      id,
+      OR: [
+        {
+          room: {
+            created_by: userId
+          }
+        },
+        {
+          room: {
+            members: {
+              some: {
+                user_id: userId
+              }
+            }
+          }
+        },
+        {
+          type: "FREE"
+        }
+      ]
     },
     select: {
       id: true,
       name: true,
-      photo_url: true,
+      photo: true,
       about: true,
       type: true,
       assets: {
@@ -192,6 +214,12 @@ export const findDetailGroup = async (id: string, userId: string) => {
       }
     }
   });
+
+  if (!group) {
+    throw new Error("GROUP_NOT_FOUND_OR_NOT_ACCESSIBLE");
+  }
+
+  return group;
 };
 
 export const getMyOwnGroups = async (userId: string) => {
@@ -228,4 +256,38 @@ export const getTotalMembers = async (roomIds: string[]) => {
       }
     }
   });
+};
+
+export const getMemberById = async (userId: string, roomId: string) => {
+  return await prisma.roomMember.findFirst({
+    where: {
+      user_id: userId,
+      room_id: roomId
+    }
+  });
+};
+
+export const addMemberFreeGroup = async (roomId: string, userId: string) => {
+  const role = await userRepositories.findRole("MEMBER");
+
+  return await prisma.roomMember.create({
+    data: {
+      room_id: roomId,
+      user_id: userId,
+      role_id: role.id
+    }
+  });
+};
+
+export const findRoomById = async (roomId: string) => {
+  const room = await prisma.room.findUnique({
+    where: { id: roomId },
+    select: { created_by: true }
+  });
+
+  if (!room) {
+    throw new Error("ROOM_NOT_FOUND");
+  }
+
+  return room;
 };

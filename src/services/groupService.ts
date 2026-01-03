@@ -1,5 +1,6 @@
 import { GroupFreeValues, GroupPaidValues } from "../utils/schema/group";
 import * as groupRepositories from "../repositories/groupRepositories";
+import * as userRepositories from "../repositories/userRepositories";
 import path from "node:path";
 import fs from "node:fs";
 
@@ -16,6 +17,11 @@ export const findDetailGroup = async (id: string, userId: string) => {
 };
 
 export const upsertFreeGroup = async (data: GroupFreeValues, userId: string, photo?: string, groupId?: string) => {
+  const user = await userRepositories.getUserById(userId);
+  if (!user) {
+    throw new Error("USER_NOT_FOUND");
+  }
+
   if (groupId && photo) {
     const group = await groupRepositories.findGroupById(groupId);
 
@@ -38,6 +44,11 @@ export const upsertPaidGroup = async (
   assets?: string[],
   groupId?: string
 ) => {
+  const user = await userRepositories.getUserById(userId);
+  if (!user) {
+    throw new Error("USER_NOT_FOUND");
+  }
+
   if (groupId && photo) {
     const group = await groupRepositories.findGroupById(groupId);
 
@@ -80,4 +91,22 @@ export const getMyOwnGroups = async (userId: string) => {
     free_groups: freeGroups,
     total_members: totalMembers
   };
+};
+
+export const addMemberFreeGroup = async (groupId: string, userId: string) => {
+  const group = await groupRepositories.findGroupById(groupId);
+
+  if (group.type === "PAID") {
+    throw new Error("This group is paid");
+  }
+
+  try {
+    await groupRepositories.addMemberFreeGroup(group.room_id, userId);
+    return true;
+  } catch (err: any) {
+    if (err.code === "P2002") {
+      throw new Error("You already joined group");
+    }
+    throw err;
+  }
 };

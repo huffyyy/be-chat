@@ -123,8 +123,10 @@ model RoomMember {
 
   joined_at DateTime @default(now())
 
+  @@unique([room_id, user_id]) 
   @@map("room_members")
 }
+
 
 enum MessagesType {
   TEXT
