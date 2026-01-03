@@ -52,6 +52,22 @@ export const findGroupById = async (id: string) => {
   const group = await prisma.group.findFirst({
     where: {
       id
+    },
+    include: {
+      room: {
+        select: {
+          members: {
+            include: {
+              role: true
+            },
+            where: {
+              role: {
+                role: "OWNER"
+              }
+            }
+          }
+        }
+      }
     }
   });
 
