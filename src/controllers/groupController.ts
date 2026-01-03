@@ -238,3 +238,19 @@ export const createMemberFreeGroup = async (req: CustomRequest, res: Response, n
     next(error);
   }
 };
+
+export const deleteAssetGroup = async (req: CustomRequest, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+
+    const data = await groupService.deleteGroupAsset(id);
+
+    return res.json({
+      success: true,
+      message: "Succes delete assets group",
+      data
+    });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -22,7 +22,7 @@ const uploadPhotoPaid = multer({
   //   fileFilter(req, file, callback) {
   //     if (file.fieldname === "assets") {
   //       callback(null, true);
-  //       return;
+  //       ;
   //     }
 
   //     if (file.mimetype.startsWith("image/")) {
@@ -56,5 +56,7 @@ groupRoutes.put(
 );
 
 groupRoutes.post("/groups/join", verifyToken, groupController.createMemberFreeGroup);
+
+groupRoutes.delete("/groups/assets/:id", verifyToken, groupController.deleteAssetGroup);
 
 export default groupRoutes;
