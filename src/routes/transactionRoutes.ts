@@ -8,5 +8,6 @@ transactionRoutes.post("/transactions", verifyToken, transactionController.creat
 transactionRoutes.post("/transactions/handle-payment", transactionController.updateTransaction);
 transactionRoutes.get("/revenue", verifyToken, transactionController.getRevenueStat);
 transactionRoutes.get("/payouts", verifyToken, transactionController.getHistoryPayouts);
+transactionRoutes.get("/balance", verifyToken, transactionController.getBalance);
 
 export default transactionRoutes;
