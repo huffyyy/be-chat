@@ -38,3 +38,14 @@ export const getRooms = async (req: CustomRequest, res: Response, next: NextFunc
     data
   });
 };
+
+export const getRoomMessage = async (req: CustomRequest, res: Response, next: NextFunction) => {
+  const { roomId } = req.params;
+  const data = await chatService.getRoomMessage(roomId);
+
+  return res.json({
+    success: true,
+    message: "Success get room messages",
+    data
+  });
+};
