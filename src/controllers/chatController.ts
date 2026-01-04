@@ -28,3 +28,13 @@ export const createRoomPersonal = async (req: CustomRequest, res: Response, next
     next(error);
   }
 };
+
+export const getRooms = async (req: CustomRequest, res: Response, next: NextFunction) => {
+  const data = await chatService.getRecentRoom(req?.user?.id ?? "");
+
+  return res.json({
+    success: true,
+    message: "Success get rooms",
+    data
+  });
+};
