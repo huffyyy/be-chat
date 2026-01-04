@@ -34,11 +34,25 @@ export const storageGroupPaidPhoto = multer.diskStorage({
       cb(null, "public/assets/uploads/group_assets");
     }
   },
+
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     const extension = file.mimetype.split("/")[1];
 
     const filename = `${file.fieldname}-${uniqueSuffix}.${extension}`;
+    cb(null, filename);
+  }
+});
+
+export const storagePhotoAttach = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "public/assets/uploads/attach_messages");
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const extension = file.mimetype.split("/")[1];
+
+    const filename = `photo-${uniqueSuffix}.${extension}`;
     cb(null, filename);
   }
 });
