@@ -6,5 +6,6 @@ const transactionRoutes = express.Router();
 
 transactionRoutes.post("/transactions", verifyToken, transactionController.createTransaction);
 transactionRoutes.post("/transactions/handle-payment", transactionController.updateTransaction);
+transactionRoutes.get("/revenue", verifyToken, transactionController.getRevenueStat);
 
 export default transactionRoutes;
