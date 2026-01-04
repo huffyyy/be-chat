@@ -44,6 +44,9 @@ export const getMyPayouts = async (user_id: string) => {
   return await prisma.payout.findMany({
     where: {
       user_id
+    },
+    orderBy: {
+      created_at: "desc"
     }
   });
 };
