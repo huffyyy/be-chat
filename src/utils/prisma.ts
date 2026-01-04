@@ -9,7 +9,7 @@ export const prisma = new PrismaClient().$extends({
         },
         compute(data) {
           if (data.photo) {
-            return `${process.env.URL_ASSETS_PHOTO}${data.photo}`;
+            return `${process.env.URL_ASSET_PHOTO}/${data.photo}`;
           }
           return null;
         }
@@ -22,8 +22,23 @@ export const prisma = new PrismaClient().$extends({
         },
         compute(data) {
           if (data.photo) {
-            return `${process.env.URL_ASSET_GROUP_PHOTO}${data.photo}`;
+            return `${process.env.URL_ASSET_GROUP_PHOTO}/${data.photo}`;
           }
+        }
+      }
+    },
+    roomMessage: {
+      content_url: {
+        needs: {
+          content: true,
+          type: true
+        },
+        compute(data) {
+          if (data.type === "IMAGE") {
+            return `${process.env.URL_ASSET_ATTACH}/${data.content}`;
+          }
+
+          return data.content;
         }
       }
     }
