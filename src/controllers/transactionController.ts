@@ -2,6 +2,7 @@ import { NextFunction, Response } from "express";
 import { CustomRequest } from "../types/customRequest";
 import { joinFreeGroup } from "../utils/schema/group";
 import * as transactionService from "../services/transactionService";
+import { withdrawSchema } from "../utils/schema/transaction";
 
 export const createTransaction = async (req: CustomRequest, res: Response, next: NextFunction) => {
   try {
@@ -78,6 +79,32 @@ export const getBalance = async (req: CustomRequest, res: Response, next: NextFu
     return res.json({
       success: true,
       message: "Success get balance",
+      data
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createWithdraw = async (req: CustomRequest, res: Response, next: NextFunction) => {
+  try {
+    const parse = withdrawSchema.safeParse(req.body);
+
+    if (!parse.success) {
+      const errorMessage = parse.error.issues.map((err) => `${err.path} - ${err.message}`);
+
+      return res.status(400).json({
+        success: false,
+        message: "Validation Error",
+        detail: errorMessage
+      });
+    }
+
+    const data = await transactionService.createWithdraw(parse.data, req.user?.id ?? "");
+
+    return res.json({
+      success: true,
+      message: "Succes create withdraw ",
       data
     });
   } catch (error) {

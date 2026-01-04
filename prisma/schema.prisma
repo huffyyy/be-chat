@@ -204,7 +204,7 @@ model Payout {
 
   status TransactionType @default(PENDING)
 
-  proof String @db.Text
+  proof String? @db.Text   
 
   created_at DateTime @default(now())
 
