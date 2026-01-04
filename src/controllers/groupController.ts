@@ -231,7 +231,7 @@ export const createMemberFreeGroup = async (req: CustomRequest, res: Response, n
 
     return res.json({
       success: true,
-      message: "Succes join group",
+      message: "Success join group",
       data
     });
   } catch (error) {
